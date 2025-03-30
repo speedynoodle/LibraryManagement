@@ -84,6 +84,9 @@ public class LibraryConsoleUI
                 System.Console.Write("Author: ");
                 book.Author = System.Console.ReadLine() ?? string.Empty;
                 
+                System.Console.Write("ISBN (10 or 13 digits): ");
+                book.ISBN = System.Console.ReadLine() ?? string.Empty;
+                
                 var bookId =  await _bookService.AddBook(book);
                 System.Console.WriteLine(bookId > 0
                     ? $"Book added successfully with ID: {bookId}!"
@@ -112,20 +115,19 @@ public class LibraryConsoleUI
                     }
 
                     System.Console.WriteLine("Current book details:");
-                    System.Console.WriteLine($"ID: {existingBook.Id}");
-                    System.Console.WriteLine($"Title: {existingBook.Title}");
-                    System.Console.WriteLine($"Author: {existingBook.Author}");
+                    WriteBookDetails(existingBook);
 
                     System.Console.WriteLine("\nEnter new details (leave empty to keep current value):");
                     var title = ReadInputWithDefault("Title", existingBook.Title);
                     var author = ReadInputWithDefault("Author", existingBook.Author);
-                    //var isbn = ReadInputWithDefault("ISBN", existingBook.ISBN);
+                    var isbn = ReadInputWithDefault("ISBN", existingBook.ISBN);
 
                     var updatedBook = new Book
                     {
                         Id = id,
                         Title = title,
-                        Author = author
+                        Author = author,
+                        ISBN = isbn
                     };
                     
                     if (await _bookService.UpdateBook(updatedBook))
@@ -162,9 +164,7 @@ public class LibraryConsoleUI
                     return;
                 }
 
-                System.Console.WriteLine($"ID: {book.Id}");
-                System.Console.WriteLine($"Title: {book.Title}");
-                System.Console.WriteLine($"Author: {book.Author}");
+                WriteBookDetails(book);
                 
             }
             else
@@ -189,9 +189,7 @@ public class LibraryConsoleUI
             
             foreach (var book in books)
             {
-                System.Console.WriteLine($"ID: {book.Id}");
-                System.Console.WriteLine($"Title: {book.Title}");
-                System.Console.WriteLine($"Author: {book.Author}");
+                WriteBookDetails(book);
             }
         }
 
@@ -209,10 +207,8 @@ public class LibraryConsoleUI
                 }
                 
                 System.Console.WriteLine("Book to delete:");
-                System.Console.WriteLine($"ID: {existingBook.Id}");
-                System.Console.WriteLine($"Title: {existingBook.Title}");
-                System.Console.WriteLine($"Author: {existingBook.Author}");
-                
+                WriteBookDetails(existingBook);
+
                 System.Console.Write("\nAre you sure you want to delete this book? (y/n): ");
                 var confirmation = System.Console.ReadLine()?.ToLower();
                 
@@ -243,5 +239,13 @@ public class LibraryConsoleUI
             System.Console.Write($"{prompt} ({defaultValue}): ");
             var input = System.Console.ReadLine() ?? "";
             return string.IsNullOrWhiteSpace(input) ? defaultValue : input;
+        }
+
+        private static void WriteBookDetails(Book book)
+        {
+            System.Console.WriteLine($"ID: {book.Id}");
+            System.Console.WriteLine($"Title: {book.Title}");
+            System.Console.WriteLine($"Author: {book.Author}");
+            System.Console.WriteLine($"ISBN: {book.ISBN}");
         }
 }

@@ -5,6 +5,12 @@ namespace LibraryManagement.Services.Validators;
 
 public class BookValidator : IValidator<Book>
 {
+    private readonly IValidator<string> _isbnValidator;
+
+    public BookValidator(IValidator<string> isbnValidator)
+    {
+        _isbnValidator = isbnValidator ?? throw new ArgumentNullException(nameof(isbnValidator));
+    }
     public (bool isValid, string? errorMessage) IsValid(Book book)
     {
         var errorMsgs = new List<string>();
@@ -17,6 +23,13 @@ public class BookValidator : IValidator<Book>
         if (string.IsNullOrWhiteSpace(book.Author))
         {
             errorMsgs.Add("Author is required");
+        } 
+        
+        var (isValidIsbn, isbnErrorMsg) = _isbnValidator.IsValid(book.ISBN);
+
+        if (!isValidIsbn)
+        {
+            errorMsgs.Add(isbnErrorMsg);
         }
         
         return errorMsgs.Any()

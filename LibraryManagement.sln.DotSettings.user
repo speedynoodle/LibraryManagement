@@ -5,5 +5,7 @@
     &lt;TestId&gt;xUnit::C72D5212-124C-4F64-8680-5A49D9E64CE7::net8.0::Tests.Services.BookServiceTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::C72D5212-124C-4F64-8680-5A49D9E64CE7::net8.0::Tests.Repositories.BookRepositoryTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::C72D5212-124C-4F64-8680-5A49D9E64CE7::net8.0::Tests.Validators.BookValidatorTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C72D5212-124C-4F64-8680-5A49D9E64CE7::net8.0::Tests.Services.ISBNValidatorTests.IsValid_ShouldValidateCorrectly&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::C72D5212-124C-4F64-8680-5A49D9E64CE7::net8.0::Tests.Services.ISBNValidatorTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -15,6 +15,7 @@ var serviceProvider = new ServiceCollection()
         options.UseInMemoryDatabase("LibraryDatabase"))
     .AddScoped<IBookRepository, BookRepository>()
     .AddScoped<IValidator<Book>, BookValidator>()
+    .AddScoped<IValidator<string>, ISBNValidator>()
     .AddScoped<IBookService, BookService>()
     .BuildServiceProvider();
 
