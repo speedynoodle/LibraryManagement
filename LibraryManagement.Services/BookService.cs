@@ -29,6 +29,12 @@ public class BookService : IBookService
         {
             throw new ValidationException(errorMessage); 
         }
+        
+        // Check if the ISBN is already in use
+        if (!string.IsNullOrWhiteSpace(book.ISBN) && await _bookRepository.IsbnExists(book.ISBN))
+        {
+            throw new ValidationException("ISBN is already in use by another book");
+        }
 
         await _bookRepository.Add(book);
         return book.Id;
@@ -57,6 +63,12 @@ public class BookService : IBookService
         if (!isValid)
         {
             throw new ValidationException(errorMessage); 
+        }
+
+        // Check if the ISBN is already in use by another book
+        if (!string.IsNullOrWhiteSpace(updatedBook.ISBN) && await _bookRepository.IsbnExists(updatedBook.ISBN, updatedBook.Id))
+        {
+            throw new ValidationException("ISBN is already in use by another book");
         }
 
         await _bookRepository.Update(updatedBook);

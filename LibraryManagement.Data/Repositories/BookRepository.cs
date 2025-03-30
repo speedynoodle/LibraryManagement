@@ -54,4 +54,18 @@ public class BookRepository  : IBookRepository
         _context.Books.Remove(entity);
         await _context.SaveChangesAsync();
     }
+    
+    public async Task<bool> IsbnExists(string isbn, int? excludeBookId = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(isbn);
+
+        var query = _context.Books.Where(b => b.ISBN.Equals(isbn));
+        
+        if (excludeBookId.HasValue)
+        {
+            query = query.Where(b => b.Id != excludeBookId.Value);
+        }
+        
+        return await query.AnyAsync();
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using LibraryManagement.Services.Validators;
-using Moq;
 
-namespace Tests.Services;
+namespace Tests.Validators;
 
 
 public class ISBNValidatorTests
