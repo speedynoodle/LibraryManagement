@@ -49,7 +49,7 @@ The solution is organised based on the clean architecture concepts with layers s
 
 1. Clone the repository:
 ```
-https://github.com/speedynoodle/LibraryManagement.git
+git clone https://github.com/speedynoodle/LibraryManagement.git
 cd LibraryManagement
 ```
 
