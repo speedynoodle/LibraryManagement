@@ -60,4 +60,67 @@ public class BookServiceTests
         Assert.Equal(book.Id, result);
         _mockBookRepository.Verify(r => r.Add(It.IsAny<Book>()), Times.Once);
     }
+    
+    [Fact]
+    public async Task GetBookById_CallsBookRepositoryGetById()
+    {  
+        // Arrange
+        const int someBookId = 1;
+        
+        // Act
+        _ = await _sut.GetBookById(someBookId);
+        
+        // Assert
+        _mockBookRepository.Verify(r => r.GetById(someBookId), Times.Once);
+    }
+    
+    [Fact]
+    public async Task GetAllBooks_CallsBookRepositoryGetById()
+    {  
+        // Arrange
+        // Act
+        _ = await _sut.GetAllBooks();
+        
+        // Assert
+        _mockBookRepository.Verify(r => r.GetAll(), Times.Once);
+    }
+    
+    [Fact]
+    public async Task UpdateBook_WithValidBook_ReturnsTrue()
+    {
+        // Arrange
+        var book = new Book
+        {
+            Id = 1,
+            Title = "Updated Title",
+            Author = "Updated Author"
+        };
+
+        _mockBookRepository.Setup(repo => repo.GetById(1)).ReturnsAsync(book);
+        _mockBookValidator.Setup(v => v.IsValid(It.IsAny<Book>())).Returns((true, string.Empty));
+
+        // Act
+        var result =  await _sut.UpdateBook(book);
+
+        // Assert
+        Assert.True(result);
+        _mockBookRepository.Verify(repo => repo.Update(It.IsAny<Book>()), Times.Once);
+        _mockBookValidator.Verify(v => v.IsValid(It.IsAny<Book>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task DeleteBook_WithValidId_ReturnsTrue()
+    {
+        // Arrange
+        var book = new Book { Title = "Some Book", Author = "Some Author"};
+        _mockBookRepository.Setup(repo => repo.GetById(1)).ReturnsAsync(book);
+        
+        // Act1
+        
+        var result = await _sut.DeleteBook(1);
+
+        // Assert
+        Assert.True(result);
+        _mockBookRepository.Verify(repo => repo.Remove(book), Times.Once);
+    }
 }

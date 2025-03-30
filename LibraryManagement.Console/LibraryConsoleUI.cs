@@ -21,6 +21,11 @@ public class LibraryConsoleUI
                 System.Console.Clear();
                 System.Console.WriteLine("LIBRARY MANAGEMENT SYSTEM");
                 System.Console.WriteLine("1. Add a book");
+                System.Console.WriteLine("2. Update an existing book");
+                System.Console.WriteLine("3. Delete a book");
+                System.Console.WriteLine("4. List all books");
+                System.Console.WriteLine("5. View book details");
+                System.Console.WriteLine("6. Exit");
 
                 System.Console.Write("\nEnter your choice: ");
                 if (int.TryParse(System.Console.ReadLine(), out int choice))
@@ -32,7 +37,19 @@ public class LibraryConsoleUI
                         case 1:
                             await AddBook();
                             break;
-                        case 7:
+                        case 2:
+                            await UpdateBook();
+                            break;
+                        case 3:
+                            await DeleteBook();
+                            break;
+                        case 4:
+                            await ListAllBooks();
+                            break;
+                        case 5:
+                            await ViewBookDetails();
+                            break;
+                        case 6:
                             isRunning = false;
                             break;
                         default:
@@ -52,7 +69,7 @@ public class LibraryConsoleUI
                 }
             }
         }
-     
+
         private async Task AddBook()
         {
             try
@@ -76,5 +93,155 @@ public class LibraryConsoleUI
             {
                 System.Console.WriteLine($"Oops! Something went wrong: {ex.Message}");
             }
+        }
+        
+        private async Task UpdateBook()
+        {
+            try
+            {
+                System.Console.WriteLine("--- UPDATE BOOK ---");
+            
+                System.Console.Write("Enter book ID: ");
+                if (int.TryParse(System.Console.ReadLine(), out int id))
+                {
+                    var existingBook = await _bookService.GetBookById(id);
+                    if (existingBook == null)
+                    {
+                        System.Console.WriteLine($"Book with ID {id} not found.");
+                        return;
+                    }
+
+                    System.Console.WriteLine("Current book details:");
+                    System.Console.WriteLine($"ID: {existingBook.Id}");
+                    System.Console.WriteLine($"Title: {existingBook.Title}");
+                    System.Console.WriteLine($"Author: {existingBook.Author}");
+
+                    System.Console.WriteLine("\nEnter new details (leave empty to keep current value):");
+                    var title = ReadInputWithDefault("Title", existingBook.Title);
+                    var author = ReadInputWithDefault("Author", existingBook.Author);
+                    //var isbn = ReadInputWithDefault("ISBN", existingBook.ISBN);
+
+                    var updatedBook = new Book
+                    {
+                        Id = id,
+                        Title = title,
+                        Author = author
+                    };
+                    
+                    if (await _bookService.UpdateBook(updatedBook))
+                    {
+                        System.Console.WriteLine("Book updated successfully!");
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Failed to update book. Please check your input and try again.");
+                    }
+                }
+                else
+                {
+                    System.Console.WriteLine("Invalid book ID.");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine($"Oops! Something went wrong: {ex.Message}");
+            }
+        }
+        
+        private async Task ViewBookDetails()
+        {
+            System.Console.WriteLine("--- VIEW BOOK DETAILS ---");
+
+            System.Console.Write("Enter book ID: ");
+            if (int.TryParse(System.Console.ReadLine(), out int id))
+            {
+                var book = await _bookService.GetBookById(id);
+                if (book == null)
+                {
+                    System.Console.WriteLine($"Book with ID {id} not found.");
+                    return;
+                }
+
+                System.Console.WriteLine($"ID: {book.Id}");
+                System.Console.WriteLine($"Title: {book.Title}");
+                System.Console.WriteLine($"Author: {book.Author}");
+                
+            }
+            else
+            {
+                System.Console.WriteLine("Invalid book ID.");
+            }
+        }
+
+        private async Task ListAllBooks()
+        {
+            System.Console.WriteLine("--- ALL BOOKS ---");
+            
+            var books = (await _bookService.GetAllBooks()).ToList();
+            
+            if (books.Count == 0)
+            {
+                System.Console.WriteLine("No books found in the library.");
+                return;
+            }
+
+            System.Console.WriteLine($"Total books: {books.Count}\n");
+            
+            foreach (var book in books)
+            {
+                System.Console.WriteLine($"ID: {book.Id}");
+                System.Console.WriteLine($"Title: {book.Title}");
+                System.Console.WriteLine($"Author: {book.Author}");
+            }
+        }
+
+        private async Task DeleteBook()
+        {
+            System.Console.WriteLine("--- DELETE BOOK ---");
+            System.Console.Write("Enter book ID: ");
+            if (int.TryParse(System.Console.ReadLine(), out int id))
+            {
+                var existingBook = await _bookService.GetBookById(id);
+                if (existingBook == null)
+                {
+                    System.Console.WriteLine($"Book with ID {id} not found.");
+                    return;
+                }
+                
+                System.Console.WriteLine("Book to delete:");
+                System.Console.WriteLine($"ID: {existingBook.Id}");
+                System.Console.WriteLine($"Title: {existingBook.Title}");
+                System.Console.WriteLine($"Author: {existingBook.Author}");
+                
+                System.Console.Write("\nAre you sure you want to delete this book? (y/n): ");
+                var confirmation = System.Console.ReadLine()?.ToLower();
+                
+                if (confirmation == "y")
+                {
+                    if (await _bookService.DeleteBook(id))
+                    {
+                        System.Console.WriteLine("Book deleted successfully!");
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Failed to delete book.");
+                    }
+                }
+                else
+                {
+                    System.Console.WriteLine("Book deletion cancelled.");
+                }
+            }
+            else
+            {
+                System.Console.WriteLine("Invalid book ID.");
+            }
+        }
+        
+        private static string ReadInputWithDefault(string prompt, string defaultValue)
+        {
+            System.Console.Write($"{prompt} ({defaultValue}): ");
+            var input = System.Console.ReadLine() ?? "";
+            return string.IsNullOrWhiteSpace(input) ? defaultValue : input;
         }
 }

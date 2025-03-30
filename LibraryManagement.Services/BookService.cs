@@ -33,4 +33,45 @@ public class BookService : IBookService
         await _bookRepository.Add(book);
         return book.Id;
     }
+
+    /// <summary>
+    /// Gets a book by its ID
+    /// </summary>
+    /// <param name="id">The book ID</param>
+    /// <returns>The book if found, otherwise null</returns>
+    public async Task<Book?> GetBookById(int id)
+    {
+        return await _bookRepository.GetById(id);
+    }
+
+    public async Task<IEnumerable<Book>> GetAllBooks()
+    {
+       return await _bookRepository.GetAll();
+    }
+
+    public async Task<bool> UpdateBook(Book updatedBook)
+    {
+        ArgumentNullException.ThrowIfNull(updatedBook);
+
+        var (isValid, errorMessage) = _bookValidator.IsValid(updatedBook);
+        if (!isValid)
+        {
+            throw new ValidationException(errorMessage); 
+        }
+
+        await _bookRepository.Update(updatedBook);
+        return true;
+    }
+
+    public async Task<bool> DeleteBook(int id)
+    {
+        var book = await _bookRepository.GetById(id);
+        if (book == null)
+        {
+            return false; 
+        }
+        
+        await _bookRepository.Remove(book);
+        return true;
+    }
 }
